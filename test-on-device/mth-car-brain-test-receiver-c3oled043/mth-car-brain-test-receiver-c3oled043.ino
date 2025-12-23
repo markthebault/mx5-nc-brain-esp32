@@ -30,6 +30,8 @@ int yOffset = 24; // = (64-h) //not div/2 I don't know why
 
 /* Classes */
 
+int data_received = 0;
+
 class ESP_NOW_Peer_Class : public ESP_NOW_Peer {
 public:
   ESP_NOW_Peer_Class(const uint8_t *mac_addr, uint8_t channel, wifi_interface_t iface, const uint8_t *lmk) 
@@ -76,6 +78,8 @@ public:
     u8g2.printf("Thr: %d %%", (int)incoming->throttlePos);
 
     u8g2.sendBuffer();
+
+    data_received = 1;
   }
 };
 
@@ -120,5 +124,12 @@ void setup() {
 
 void loop() {
   // Loop remains empty as processing happens in onReceive callback
+  if(!data_received){
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_4x6_tr);
+    u8g2.setCursor(xOffset, yOffset+7);
+    u8g2.printf("Waiting for Data");
+    u8g2.sendBuffer();
+  }
   delay(1000);
 }
