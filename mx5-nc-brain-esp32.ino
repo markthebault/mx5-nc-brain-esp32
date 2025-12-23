@@ -170,8 +170,10 @@ void loop() {
     myData.oilPressure = rawOilPress - pressureOffset;
     if (myData.oilPressure < 0) myData.oilPressure = 0; // Floor to zero
 
+    //TMP with button
+    myData.waterTemp     = ((float)(volts[2]) / 5.0) * 140;   
     // Example/Static Data
-    myData.waterTemp     = 92.5;   
+    // myData.waterTemp     = 92.5;   
     myData.engineRPM     = 3500;   
     myData.brakePressure = 0.0;
     myData.brakePercent  = 0;
@@ -186,6 +188,8 @@ void loop() {
     }
     DEBUG_PRINTF("TEMP:  Raw: %5.2f °C | Corrected (5.02V): %5.2f °C\n", calculateTemperature(volts[0]), myData.oilTemp);
     DEBUG_PRINTF("PRESS: Raw: %5.2f Bar | Corrected (Zeroed): %5.2f Bar\n", rawOilPress, myData.oilPressure);
+    DEBUG_PRINTF("FAKE Water Temp:  %5.2f °C", myData.waterTemp);
+    DEBUG_PRINTF("---");
 
     // 4. Broadcast via ESP-NOW
     bool success = broadcast_peer.send_message((uint8_t *)&myData, sizeof(myData));
