@@ -57,8 +57,8 @@ public:
     TelemetryData* incoming = (TelemetryData*)data;
 
     // 3. Print to Serial for debugging
-    Serial.printf("RPM: %u | Oil: %.1f C | Speed: %.1f\n", 
-                  incoming->engineRPM, incoming->oilTemp, incoming->speed);
+    Serial.printf("Oil P: %.1f bar | Oil T: %.1f C| Water T: %.1f C\n", 
+                  incoming->oilPressure, incoming->oilTemp, incoming->waterTemp);
 
     // 4. Update OLED Display
     u8g2.clearBuffer();
@@ -66,16 +66,16 @@ public:
     u8g2.setFont(u8g2_font_4x6_tr);
     
     u8g2.setCursor(xOffset, yOffset+7);
-    u8g2.printf("RPM: %u", incoming->engineRPM);
+    u8g2.printf("Oil P: %.1f bar", incoming->oilPressure);
     
     u8g2.setCursor(xOffset, yOffset+14);
     u8g2.printf("Oil T: %.1f C", incoming->oilTemp);
     
     u8g2.setCursor(xOffset, yOffset+21);
-    u8g2.printf("Speed: %.1f km/h", incoming->speed);
+    u8g2.printf("Water T: %.1f C", incoming->waterTemp);
     
     u8g2.setCursor(xOffset, yOffset+28);
-    u8g2.printf("Thr: %d %%", (int)incoming->throttlePos);
+    u8g2.printf("RPM: %d", (int)incoming->engineRPM);
 
     u8g2.sendBuffer();
 
@@ -122,7 +122,10 @@ void setup() {
   Serial.println("Receiver Ready. Waiting for Telemetry...");
 }
 
+int count = 0;
+
 void loop() {
+
   // Loop remains empty as processing happens in onReceive callback
   if(!data_received){
     u8g2.clearBuffer();
@@ -131,5 +134,14 @@ void loop() {
     u8g2.printf("Waiting for Data");
     u8g2.sendBuffer();
   }
+
+  if (count >= 4){
+    Serial.println("Data not received since 5s reset screen");
+    data_received = 0;
+    count = 0;
+  }
+
+  count++;
+
   delay(1000);
 }
