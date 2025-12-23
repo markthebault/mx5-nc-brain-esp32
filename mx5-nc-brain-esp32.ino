@@ -200,7 +200,7 @@ void loop() {
     
 
     // SLEEP CYCLE
-    delay(200); // Slightly slower loop for readability
+    delay(30); // Slightly slower loop for readability
 
     // Not working
     // // 5. Enter Light Sleep
