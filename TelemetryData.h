@@ -9,6 +9,15 @@
  */
 
 /**
+ * @enum GaugeType
+ * @brief Display mode for telemetry gauges
+ */
+enum GaugeType : uint8_t {
+    GAUGE_NORMAL = 0,   // Normal/street gauge display
+    GAUGE_RACING = 1    // Racing gauge display
+};
+
+/**
  * @struct TelemetryData
  * @brief Packed structure containing all vehicle telemetry data
  *
@@ -25,6 +34,7 @@ typedef struct __attribute__((packed)) {
     float throttlePos;     // Throttle position percentage
     float speed;           // Vehicle speed in km/h
     float accelPos;        // Accelerator pedal position percentage
+    GaugeType gaugeType;   // Display mode: normal or racing
 } TelemetryData;
 
 #endif // TELEMETRY_DATA_H

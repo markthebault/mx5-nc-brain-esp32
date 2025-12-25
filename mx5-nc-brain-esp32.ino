@@ -22,6 +22,7 @@
 #include "SensorUtils.h"
 #include "CANBus.h"
 #include "ESPNowBroadcast.h"
+#include "Buttons.h"
 
 // --- Global Objects ---
 Adafruit_ADS1115 ads;
@@ -71,6 +72,10 @@ void setup() {
     CANBus::init();
     CANBus::startReceiveTask(&myData);
 
+    // --- Button Setup ---
+    Buttons::init();
+    Buttons::startTask(&myData);
+
     // --- Initialize test data for debugging ---
     myData.engineRPM     = 3666;
     myData.brakePressure = 5.0;
@@ -78,6 +83,7 @@ void setup() {
     myData.throttlePos   = 25.5;
     myData.speed         = 110.2;
     myData.accelPos      = 20.0;
+    myData.gaugeType     = GAUGE_NORMAL;  // Start with normal gauge mode
 
     DEBUG_PRINTLN("===========================================");
     DEBUG_PRINTLN("  Telemetry Master Online");
@@ -122,6 +128,7 @@ void loop() {
     DEBUG_PRINTF("Throttle:   %.1f%%\n", myData.throttlePos);
     DEBUG_PRINTF("Accel Pos:  %.1f%%\n", myData.accelPos);
     DEBUG_PRINTF("Brake:      %.2f kPa (%d%%)\n", myData.brakePressure, myData.brakePercent);
+    DEBUG_PRINTF("Gauge Mode: %s\n", myData.gaugeType == GAUGE_RACING ? "RACING" : "NORMAL");
 
     // --- 4. Broadcast Telemetry via ESP-NOW ---
     ESPNowBroadcast::broadcastTelemetry(broadcast_peer, myData);

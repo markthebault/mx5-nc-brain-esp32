@@ -35,6 +35,13 @@ namespace GeneralConfig {
     // Main loop delay in milliseconds (controls telemetry update rate)
     // 500ms = 2 updates per second, 100ms = 10 updates per second, etc.
     constexpr int MAIN_LOOP_DELAY_MS = 500;
+
+    // --- Button Configuration ---
+    // GPIO pin for push button input
+    constexpr uint8_t BUTTON_PIN = 7;
+
+    // Button debounce time in milliseconds
+    constexpr uint8_t BUTTON_DEBOUNCE_MS = 50;
 }
 
 // =============================================================================
