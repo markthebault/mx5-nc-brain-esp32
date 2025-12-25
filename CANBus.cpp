@@ -9,12 +9,12 @@ namespace CANBus {
     void init() {
         // Configure TWAI (CAN) controller
         twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(
-            CAN_TX_GPIO,
-            CAN_RX_GPIO,
+            CANConfig::TX_GPIO,
+            CANConfig::RX_GPIO,
             TWAI_MODE_NORMAL
         );
         // For testing without acknowledgment:
-        // twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_GPIO, CAN_RX_GPIO, TWAI_MODE_NO_ACK);
+        // twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CANConfig::TX_GPIO, CANConfig::RX_GPIO, TWAI_MODE_NO_ACK);
 
         twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS();
         twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();

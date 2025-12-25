@@ -33,7 +33,7 @@ namespace ESPNowBroadcast {
 
         // Configure WiFi in Station mode
         WiFi.mode(WIFI_STA);
-        WiFi.setChannel(ESPNOW_WIFI_CHANNEL);
+        WiFi.setChannel(GeneralConfig::ESPNOW_WIFI_CHANNEL);
 
         // Wait for WiFi to start
         while (!WiFi.STA.started()) {

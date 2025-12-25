@@ -26,13 +26,13 @@
 // --- Global Objects ---
 Adafruit_ADS1115 ads;
 TelemetryData myData;
-ESP_NOW_Broadcast_Peer broadcast_peer(ESPNOW_WIFI_CHANNEL, WIFI_IF_STA, nullptr);
+ESP_NOW_Broadcast_Peer broadcast_peer(GeneralConfig::ESPNOW_WIFI_CHANNEL, WIFI_IF_STA, nullptr);
 
 // --- Calibration Data ---
-float pressureOffset = Config::PRESSURE_OFFSET;
+float pressureOffset = ADS1115Config::PRESSURE_OFFSET;
 
 void setup() {
-    DEBUG_BEGIN(Config::SERIAL_BAUD_RATE);
+    DEBUG_BEGIN(GeneralConfig::SERIAL_BAUD_RATE);
     delay(1000);
     DEBUG_PRINTLN("===========================================");
     DEBUG_PRINTLN("  MX5 NC Telemetry System - Initializing");
@@ -40,7 +40,7 @@ void setup() {
 
     // --- I2C and ADS1115 Setup ---
     DEBUG_PRINTLN("Initializing I2C and ADS1115...");
-    Wire.begin(Config::I2C_SDA, Config::I2C_SCL);
+    Wire.begin(GeneralConfig::I2C_SDA, GeneralConfig::I2C_SCL);
 
     // Configure ADC gain
     // NOTE: Keep all gain options below for reference - DO NOT REMOVE
@@ -131,5 +131,5 @@ void loop() {
     // CANBus::sendTestMessages();
 
     // --- 6. Loop Delay ---
-    delay(Config::MAIN_LOOP_DELAY_MS);
+    delay(GeneralConfig::MAIN_LOOP_DELAY_MS);
 }
