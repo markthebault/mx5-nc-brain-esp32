@@ -35,6 +35,7 @@ typedef struct __attribute__((packed)) {
     float speed;           // Vehicle speed in km/h
     float accelPos;        // Accelerator pedal position percentage
     GaugeType gaugeType;   // Display mode: normal or racing
+    uint8_t luminosity;    // Screen brightness percentage (0-100)
 } TelemetryData;
 
 #endif // TELEMETRY_DATA_H
