@@ -112,9 +112,8 @@ void loop() {
         myData.oilPressure = 0;  // Floor to zero
     }
 
-    // Water Temperature - Temporary simulation with button (Channel 2)
-    myData.waterTemp = ((float)(volts[2]) / 5.0) * 140;
-    // NOTE: Will be replaced by CAN bus data (ID 0x240) when available
+    // Water Temperature - Now received from CAN bus (ID 0x240)
+    // myData.waterTemp is updated by CANBus::receiveTask() in CANBus.cpp
 
     // --- 3. Debug Output ---
     DEBUG_PRINTLN("-----------------------------------------------------------");

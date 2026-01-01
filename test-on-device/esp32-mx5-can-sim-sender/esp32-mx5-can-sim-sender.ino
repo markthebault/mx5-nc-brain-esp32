@@ -3,13 +3,14 @@
 
 #define CAN_TX_GPIO (gpio_num_t)5
 #define CAN_RX_GPIO (gpio_num_t)4
+#define POTENTIOMETER_PIN 2  // Potentiometer for water temperature control
 
 // Simulated sensor values
 float engineRPM = 800.0;      // Start at idle
 float speed = 0.0;            // km/h
 float accelPos = 0.0;         // 0-100%
 float throttlePos = 0.0;      // 0-100%
-float waterTemp = 85.0;       // Coolant temp in C
+float waterTemp = 85.0;       // Coolant temp in C (will be read from potentiometer)
 float brakePressure = 0.0;    // kPa
 int brakePercent = 0;         // 0-100%
 
@@ -28,6 +29,10 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("MX5 NC CAN Bus Simulator");
+
+  // Configure potentiometer pin
+  pinMode(POTENTIOMETER_PIN, INPUT);
+  Serial.println("Potentiometer configured on pin 19");
 
   // Configure TWAI (CAN)
   twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_GPIO, CAN_RX_GPIO, TWAI_MODE_NORMAL);
@@ -98,12 +103,10 @@ void updateSimulatedValues() {
     }
   }
 
-  // Add slight random variation to coolant temp (simulates engine warming)
-  int tempChangeRaw = simpleRandom(4) - 1;  // -1, 0, 1, 2
-  float tempChange = tempChangeRaw / 10.0f;
-  waterTemp += tempChange;
-  if (waterTemp < 80.0f) waterTemp = 80.0f;
-  if (waterTemp > 95.0f) waterTemp = 95.0f;
+  // Read water temperature from potentiometer on pin 19
+  // ADC range: 0-4095, map to temperature range: 40-140°C
+  int potValue = analogRead(POTENTIOMETER_PIN);
+  waterTemp = 40.0f + (potValue / 4095.0f) * 100.0f;  // Maps 0-4095 to 40-140°C
 }
 
 void sendCAN_0x201() {
@@ -245,5 +248,5 @@ void loop() {
     Serial.println("---");
   }
   
-  vTaskDelay(pdMS_TO_TICKS(10));
+  vTaskDelay(pdMS_TO_TICKS(100));
 }
