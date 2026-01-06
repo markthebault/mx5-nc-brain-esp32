@@ -1,5 +1,7 @@
 # MX5 NC Brain ESP32
 
+![MX-5 NC Telemetry](./design/data-emitor-esp32-can-bosch_bb.png)
+
 ESP32-based telemetry system for Mazda MX5 NC using ESP-NOW wireless protocol for real-time vehicle data broadcasting.
 
 ## Overview
