@@ -18,10 +18,10 @@
 namespace GeneralConfig {
     // --- Hardware Pins - ESP32-C6 ---
     // I2C SDA (Serial Data) pin - connects to ADS1115 SDA
-    constexpr uint8_t I2C_SDA = 5;
+    constexpr uint8_t I2C_SDA = 22;
 
     // I2C SCL (Serial Clock) pin - connects to ADS1115 SCL
-    constexpr uint8_t I2C_SCL = 6;
+    constexpr uint8_t I2C_SCL = 23;
 
     // --- Serial Debug ---
     // Serial baud rate for debug output (115200 is standard for ESP32)
@@ -38,7 +38,7 @@ namespace GeneralConfig {
 
     // --- Button Configuration ---
     // GPIO pin for push button input
-    constexpr uint8_t BUTTON_PIN = 7;
+    constexpr uint8_t BUTTON_PIN = 1;
 
     // Button debounce time in milliseconds
     constexpr uint8_t BUTTON_DEBOUNCE_MS = 50;
