@@ -42,6 +42,17 @@ namespace GeneralConfig {
 
     // Button debounce time in milliseconds
     constexpr uint8_t BUTTON_DEBOUNCE_MS = 50;
+
+    // --- Potentiometer Configuration ---
+    // GPIO pin for potentiometer (luminosity control)
+    constexpr uint8_t POT_PIN = 2;
+
+    // Potentiometer voltage range (connected to 3.3V)
+    constexpr float POT_V_MAX = 3.3;
+
+    // Luminosity range mapping (0V → 10%, 3.3V → 100%)
+    constexpr uint8_t LUMINOSITY_MIN = 10;
+    constexpr uint8_t LUMINOSITY_MAX = 100;
 }
 
 // =============================================================================

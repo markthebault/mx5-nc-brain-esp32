@@ -76,6 +76,11 @@ void setup() {
     Buttons::init();
     Buttons::startTask(&myData);
 
+    // --- Potentiometer Setup ---
+    DEBUG_PRINTLN("Configuring potentiometer (luminosity control)...");
+    pinMode(GeneralConfig::POT_PIN, INPUT);
+    analogSetAttenuation(ADC_11db);  // Set ADC range to 0-3.3V
+
     // --- Initialize test data for debugging ---
     myData.engineRPM     = 3666;
     myData.brakePressure = 5.0;
@@ -84,7 +89,7 @@ void setup() {
     myData.speed         = 110.2;
     myData.accelPos      = 20.0;
     myData.gaugeType     = GAUGE_NORMAL;  // Start with normal gauge mode
-    myData.luminosity    = 100;           // Start with 100% screen brightness
+    myData.luminosity    = 100;           // Will be controlled by potentiometer
 
     DEBUG_PRINTLN("===========================================");
     DEBUG_PRINTLN("  Telemetry Master Online");
@@ -115,7 +120,16 @@ void loop() {
     // Water Temperature - Now received from CAN bus (ID 0x240)
     // myData.waterTemp is updated by CANBus::receiveTask() in CANBus.cpp
 
-    // --- 3. Debug Output ---
+    // --- 3. Read Potentiometer and Update Luminosity ---
+    int potRaw = analogRead(GeneralConfig::POT_PIN);
+    float potVoltage = (potRaw / 4095.0) * GeneralConfig::POT_V_MAX;
+
+    // Map voltage to luminosity: 0V → 10%, 3.3V → 100%
+    myData.luminosity = (uint8_t)map(potRaw, 0, 4095,
+                                      GeneralConfig::LUMINOSITY_MIN,
+                                      GeneralConfig::LUMINOSITY_MAX);
+
+    // --- 4. Debug Output ---
     DEBUG_PRINTLN("-----------------------------------------------------------");
     for (int i = 0; i < 4; i++) {
         DEBUG_PRINTF("AIN%d: %-6d | %5.3f V\n", i, adc[i], volts[i]);
@@ -129,15 +143,15 @@ void loop() {
     DEBUG_PRINTF("Accel Pos:  %.1f%%\n", myData.accelPos);
     DEBUG_PRINTF("Brake:      %.2f kPa (%d%%)\n", myData.brakePressure, myData.brakePercent);
     DEBUG_PRINTF("Gauge Mode: %s\n", myData.gaugeType == GAUGE_RACING ? "RACING" : "NORMAL");
-    DEBUG_PRINTF("Luminosity: %d%%\n", myData.luminosity);
+    DEBUG_PRINTF("Luminosity: %d%% (%.2fV)\n", myData.luminosity, potVoltage);
 
-    // --- 4. Broadcast Telemetry via ESP-NOW ---
+    // --- 5. Broadcast Telemetry via ESP-NOW ---
     ESPNowBroadcast::broadcastTelemetry(broadcast_peer, myData);
 
-    // --- 5. Test CAN Bus Transmission (Uncomment for testing) ---
+    // --- 6. Test CAN Bus Transmission (Uncomment for testing) ---
     // NOTE: Requires TWAI_MODE_NO_ACK in CANBus::init()
     // CANBus::sendTestMessages();
 
-    // --- 6. Loop Delay ---
+    // --- 7. Loop Delay ---
     delay(GeneralConfig::MAIN_LOOP_DELAY_MS);
 }
