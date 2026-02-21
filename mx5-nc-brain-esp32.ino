@@ -127,10 +127,12 @@ void loop() {
 
     // --- 3. Read Potentiometer and Update Luminosity ---
     int potRaw = analogRead(GeneralConfig::POT_PIN);
-    float potVoltage = (potRaw / 4095.0) * GeneralConfig::POT_V_MAX;
+    DEBUG_PRINTF("POT Val MTH Temp:   %d °C\n", potRaw);
+    float potVoltage = ((float)potRaw) / 1000.0;
+    float maxPotVoltage = GeneralConfig::POT_V_MAX * 1000.0;
 
     // Map voltage to luminosity: 0V → 10%, 3.3V → 100%
-    myData.luminosity = (uint8_t)map(potRaw, 0, 4095,
+    myData.luminosity = (uint8_t)map(potRaw, 0, maxPotVoltage,
                                       GeneralConfig::LUMINOSITY_MIN,
                                       GeneralConfig::LUMINOSITY_MAX);
 

@@ -48,7 +48,7 @@ namespace GeneralConfig {
     constexpr uint8_t POT_PIN = 2;
 
     // Potentiometer voltage range (connected to 3.3V)
-    constexpr float POT_V_MAX = 3.3;
+    constexpr float POT_V_MAX = 2.8;
 
     // Luminosity range mapping (0V → 10%, 3.3V → 100%)
     constexpr uint8_t LUMINOSITY_MIN = 10;
