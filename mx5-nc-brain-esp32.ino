@@ -132,9 +132,11 @@ void loop() {
     float maxPotVoltage = GeneralConfig::POT_V_MAX * 1000.0;
 
     // Map voltage to luminosity: 0V → 10%, 3.3V → 100%
-    myData.luminosity = (uint8_t)map(potRaw, 0, maxPotVoltage,
-                                      GeneralConfig::LUMINOSITY_MIN,
-                                      GeneralConfig::LUMINOSITY_MAX);
+    int lum = (uint8_t)map(potRaw, 0, maxPotVoltage,
+                            GeneralConfig::LUMINOSITY_MIN,
+                            GeneralConfig::LUMINOSITY_MAX);
+                            
+    myData.luminosity = constrain(lum, GeneralConfig::LUMINOSITY_MIN, GeneralConfig::LUMINOSITY_MAX); 
 
     // --- 4. Debug Output ---
     DEBUG_PRINTLN("-----------------------------------------------------------");
