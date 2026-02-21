@@ -29,14 +29,31 @@ bool ESP_NOW_Broadcast_Peer::send_message(const uint8_t *data, size_t len) {
 namespace ESPNowBroadcast {
 
     bool init(ESP_NOW_Broadcast_Peer &broadcast_peer) {
-        DEBUG_PRINTLN("Initializing ESP-NOW...");
+        DEBUG_PRINTLN("Initializing WiFi (AP+STA) and ESP-NOW...");
 
-        // Configure WiFi in Station mode
-        WiFi.mode(WIFI_STA);
-        WiFi.setChannel(GeneralConfig::ESPNOW_WIFI_CHANNEL);
+        // AP+STA mode: ESP-NOW uses STA interface, web dashboard uses AP interface
+        WiFi.mode(WIFI_AP_STA);
 
-        // Wait for WiFi to start
+        // Start Access Point on the same channel as ESP-NOW
+        if (!WiFi.softAP(WebServerConfig::AP_SSID, WebServerConfig::AP_PASSWORD,
+                         GeneralConfig::ESPNOW_WIFI_CHANNEL)) {
+            DEBUG_PRINTLN("Soft AP creation failed!");
+            return false;
+        }
+        DEBUG_PRINTF("AP started - SSID: %s  IP: %s\n",
+                     WebServerConfig::AP_SSID,
+                     WiFi.softAPIP().toString().c_str());
+
+        // Explicitly start STA interface (required for ESP-NOW in AP+STA mode)
+        WiFi.STA.begin();
+
+        // Wait for STA to be ready with timeout to avoid watchdog reset
+        unsigned long staTimeout = millis() + 5000;
         while (!WiFi.STA.started()) {
+            if (millis() > staTimeout) {
+                DEBUG_PRINTLN("WARNING: WiFi STA start timeout - proceeding anyway");
+                break;
+            }
             delay(100);
         }
 

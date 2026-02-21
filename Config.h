@@ -56,6 +56,24 @@ namespace GeneralConfig {
 }
 
 // =============================================================================
+// WEB SERVER CONFIGURATION (WiFi AP + Dashboard)
+// =============================================================================
+namespace WebServerConfig {
+    // WiFi Access Point credentials
+    constexpr const char* AP_SSID = "MX5_Dashboard";
+    constexpr const char* AP_PASSWORD = "laepaithio565";  // Min 8 characters
+
+    // HTTP server port
+    constexpr uint16_t PORT = 80;
+
+    // Dashboard data refresh interval in milliseconds
+    constexpr uint16_t REFRESH_INTERVAL_MS = 500;
+
+    // FreeRTOS task stack size in bytes
+    constexpr uint16_t TASK_STACK_SIZE = 4096;
+}
+
+// =============================================================================
 // CAN BUS CONFIGURATION (TWAI - Two-Wire Automotive Interface)
 // =============================================================================
 namespace CANConfig {

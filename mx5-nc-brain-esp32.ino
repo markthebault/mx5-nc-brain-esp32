@@ -23,6 +23,7 @@
 #include "CANBus.h"
 #include "ESPNowBroadcast.h"
 #include "Buttons.h"
+#include "DashboardServer.h"
 
 // --- Global Objects ---
 Adafruit_ADS1115 ads;
@@ -67,6 +68,10 @@ void setup() {
         delay(5000);
         ESP.restart();
     }
+
+    // --- Dashboard Web Server Setup ---
+    DashboardServer::init();
+    DashboardServer::startTask(&myData);
 
     // --- CAN Bus Setup ---
     CANBus::init();
