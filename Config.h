@@ -53,6 +53,9 @@ namespace GeneralConfig {
     // Luminosity range mapping (0V → 10%, 3.3V → 100%)
     constexpr uint8_t LUMINOSITY_MIN = 10;
     constexpr uint8_t LUMINOSITY_MAX = 100;
+
+    // Startup luminosity override: force 100% for this duration (ms)
+    constexpr unsigned long LUMINOSITY_STARTUP_MS = 10000;
 }
 
 // =============================================================================

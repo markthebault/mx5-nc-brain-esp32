@@ -144,17 +144,21 @@ void loop() {
     // myData.waterTemp is updated by CANBus::receiveTask() in CANBus.cpp
 
     // --- 3. Read Potentiometer and Update Luminosity ---
-    int potRaw = analogRead(GeneralConfig::POT_PIN);
-    DEBUG_PRINTF("POT Val MTH Temp:   %d °C\n", potRaw);
-    float potVoltage = ((float)potRaw) / 1000.0;
-    float maxPotVoltage = GeneralConfig::POT_V_MAX * 1000.0;
+    if (millis() < GeneralConfig::LUMINOSITY_STARTUP_MS) {
+        myData.luminosity = GeneralConfig::LUMINOSITY_MAX;
+    } else {
+        int potRaw = analogRead(GeneralConfig::POT_PIN);
+        DEBUG_PRINTF("POT Val MTH Temp:   %d °C\n", potRaw);
+        float potVoltage = ((float)potRaw) / 1000.0;
+        float maxPotVoltage = GeneralConfig::POT_V_MAX * 1000.0;
 
-    // Map voltage to luminosity: 0V → 10%, 3.3V → 100%
-    int lum = (uint8_t)map(potRaw, 0, maxPotVoltage,
-                            GeneralConfig::LUMINOSITY_MIN,
-                            GeneralConfig::LUMINOSITY_MAX);
-                            
-    myData.luminosity = constrain(lum, GeneralConfig::LUMINOSITY_MIN, GeneralConfig::LUMINOSITY_MAX); 
+        // Map voltage to luminosity: 0V → 10%, 3.3V → 100%
+        int lum = (uint8_t)map(potRaw, 0, maxPotVoltage,
+                                GeneralConfig::LUMINOSITY_MIN,
+                                GeneralConfig::LUMINOSITY_MAX);
+
+        myData.luminosity = constrain(lum, GeneralConfig::LUMINOSITY_MIN, GeneralConfig::LUMINOSITY_MAX);
+    }
 
     // --- 4. Debug Output ---
     DEBUG_PRINTLN("-----------------------------------------------------------");
