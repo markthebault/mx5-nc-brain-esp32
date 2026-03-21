@@ -60,7 +60,8 @@ void setup() {
     DEBUG_PRINTLN("ADS1115 initialized successfully.");
 
     // --- Auto-Zero Calibration for Pressure Sensor ---
-    pressureOffset = SensorUtils::calibratePressureOffset(ads, 1);
+    // Disabled: calibration zeros out pressure if engine is already running on ESP32 restart
+    // pressureOffset = SensorUtils::calibratePressureOffset(ads, 1);
 
     // --- Wi-Fi / ESP-NOW Setup ---
     if (!ESPNowBroadcast::init(broadcast_peer)) {
@@ -117,7 +118,7 @@ void loop() {
 
     // Oil Pressure (Channel 1)
     float rawOilPress = SensorUtils::calculatePressureBarRaw(volts[1]);
-    myData.oilPressure = rawOilPress - pressureOffset;
+    myData.oilPressure = rawOilPress; // Use raw datasheet values, no offset
     if (myData.oilPressure < 0) {
         myData.oilPressure = 0;  // Floor to zero
     }
