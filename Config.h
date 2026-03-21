@@ -34,7 +34,7 @@ namespace GeneralConfig {
     // --- Timing ---
     // Main loop delay in milliseconds (controls telemetry update rate)
     // 500ms = 2 updates per second, 100ms = 10 updates per second, etc.
-    constexpr int MAIN_LOOP_DELAY_MS = 50;
+    constexpr int MAIN_LOOP_DELAY_MS = 25;
 
     // --- Button Configuration ---
     // GPIO pin for push button input
@@ -120,6 +120,27 @@ namespace ADS1115Config {
 
     // Slope constant for voltage-to-pressure conversion (kPa per volt ratio)
     constexpr float PRESS_C1 = 0.0008;
+
+    // --- EMA Smoothing (Exponential Moving Average) ---
+    // Formula: smoothed = alpha * new_value + (1 - alpha) * smoothed
+    //
+    // Alpha controls responsiveness vs smoothness:
+    //   alpha = 1.0 → no smoothing (raw value)
+    //   alpha = 0.0 → infinite smoothing (value never changes)
+    //
+    // Effective smoothing window ≈ 1/alpha samples
+    // Smoothing time ≈ (1/alpha) * MAIN_LOOP_DELAY_MS
+    //
+    // Examples at 25ms loop:
+    //   alpha = 0.3  → ~3-4 samples  → ~100ms smoothing
+    //   alpha = 0.1  → ~10 samples   → ~250ms smoothing
+    //   alpha = 0.02 → ~50 samples   → ~1.25s smoothing
+
+    // Alpha for oil pressure: ~100ms smoothing at 25ms loop
+    constexpr float PRESSURE_EMA_ALPHA = 0.3;
+
+    // Alpha for oil temperature: ~1.25s smoothing at 25ms loop
+    constexpr float TEMPERATURE_EMA_ALPHA = 0.02;
 
     // --- Pressure Calibration Settings ---
     // Initial pressure offset in Bar (0.0 = will be calibrated at startup)

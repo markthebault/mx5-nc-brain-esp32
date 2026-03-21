@@ -33,6 +33,11 @@ ESP_NOW_Broadcast_Peer broadcast_peer(GeneralConfig::ESPNOW_WIFI_CHANNEL, WIFI_I
 // --- Calibration Data ---
 float pressureOffset = ADS1115Config::PRESSURE_OFFSET;
 
+// --- EMA Smoothing State ---
+float smoothedPressure = 0.0;
+float smoothedTemperature = 0.0;
+bool firstReading = true;
+
 void setup() {
     DEBUG_BEGIN(GeneralConfig::SERIAL_BAUD_RATE);
     delay(1000);
@@ -114,14 +119,26 @@ void loop() {
 
     // --- 2. Process Sensor Data ---
     // Oil Temperature (Channel 0)
-    myData.oilTemp = (float)SensorUtils::calculateTemperature(volts[0]);
+    float rawTemp = (float)SensorUtils::calculateTemperature(volts[0]);
 
     // Oil Pressure (Channel 1)
     float rawOilPress = SensorUtils::calculatePressureBarRaw(volts[1]);
-    myData.oilPressure = rawOilPress; // Use raw datasheet values, no offset
-    if (myData.oilPressure < 0) {
-        myData.oilPressure = 0;  // Floor to zero
+
+    // Seed EMA on first reading to avoid ramping from zero
+    if (firstReading) {
+        smoothedTemperature = rawTemp;
+        smoothedPressure = rawOilPress;
+        firstReading = false;
     }
+
+    // Apply EMA smoothing
+    smoothedTemperature = ADS1115Config::TEMPERATURE_EMA_ALPHA * rawTemp
+                        + (1.0f - ADS1115Config::TEMPERATURE_EMA_ALPHA) * smoothedTemperature;
+    smoothedPressure = ADS1115Config::PRESSURE_EMA_ALPHA * rawOilPress
+                     + (1.0f - ADS1115Config::PRESSURE_EMA_ALPHA) * smoothedPressure;
+
+    myData.oilTemp = smoothedTemperature;
+    myData.oilPressure = (smoothedPressure > 0) ? smoothedPressure : 0;
 
     // Water Temperature - Now received from CAN bus (ID 0x240)
     // myData.waterTemp is updated by CANBus::receiveTask() in CANBus.cpp
