@@ -174,7 +174,7 @@ void loop() {
     DEBUG_PRINTF("Accel Pos:  %.1f%%\n", myData.accelPos);
     DEBUG_PRINTF("Brake:      %.2f kPa (%d%%)\n", myData.brakePressure, myData.brakePercent);
     DEBUG_PRINTF("Gauge Mode: %s\n", myData.gaugeType == GAUGE_RACING ? "RACING" : "NORMAL");
-    DEBUG_PRINTF("Luminosity: %d%% (%.2fV)\n", myData.luminosity, potVoltage);
+    DEBUG_PRINTF("Luminosity: %d%%\n", myData.luminosity);
 
     // --- 5. Broadcast Telemetry via ESP-NOW ---
     ESPNowBroadcast::broadcastTelemetry(broadcast_peer, myData);
