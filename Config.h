@@ -73,7 +73,7 @@ namespace WebServerConfig {
     constexpr uint16_t REFRESH_INTERVAL_MS = 500;
 
     // FreeRTOS task stack size in bytes
-    constexpr uint16_t TASK_STACK_SIZE = 4096;
+    constexpr uint16_t TASK_STACK_SIZE = 8192;
 }
 
 // =============================================================================
