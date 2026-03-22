@@ -6,14 +6,14 @@
 
 namespace SensorUtils {
 
-    double calculateTemperature(double v_measured) {
+    double calculateTemperature(double v_measured, double v_supply) {
         // Validate input voltage range
-        if (v_measured >= ADS1115Config::V_SUPPLY || v_measured <= 0.01) {
+        if (v_measured >= v_supply || v_measured <= 0.01) {
             return -99.9;  // Error value for out-of-range
         }
 
         // Calculate NTC resistance from voltage divider
-        double r_ntc = (v_measured * ADS1115Config::R_PULLUP) / (ADS1115Config::V_SUPPLY - v_measured);
+        double r_ntc = (v_measured * ADS1115Config::R_PULLUP) / (v_supply - v_measured);
 
         // Apply Steinhart-Hart equation (simplified Beta model)
         double steinhart = log(r_ntc / ADS1115Config::NTC_R_NOM);
@@ -24,12 +24,12 @@ namespace SensorUtils {
         return (1.0 / steinhart) - 273.15;
     }
 
-    float calculatePressureBarRaw(float v_measured) {
+    float calculatePressureBarRaw(float v_measured, float v_supply) {
         // Clamp voltage to sensor's valid range
         float v_clamped = constrain(v_measured, 0.5f, 4.5f);
 
         // Convert voltage to pressure using linear calibration
-        float pressureKPa = ((v_clamped / ADS1115Config::V_SUPPLY) - ADS1115Config::PRESS_C0) / ADS1115Config::PRESS_C1;
+        float pressureKPa = ((v_clamped / v_supply) - ADS1115Config::PRESS_C0) / ADS1115Config::PRESS_C1;
 
         // Convert kPa to Bar
         return pressureKPa / 100.0f;
@@ -42,7 +42,15 @@ namespace SensorUtils {
         for (int i = 0; i < ADS1115Config::CALIBRATION_SAMPLES; i++) {
             int16_t adc = ads.readADC_SingleEnded(channel);
             float volts = ads.computeVolts(adc);
-            sum += calculatePressureBarRaw(volts);
+            
+            // Read actual supply voltage for calibration if available
+            int16_t supply_adc = ads.readADC_SingleEnded(ADS1115Config::CH_SUPPLY_VOLTAGE);
+            float supply_volts = ads.computeVolts(supply_adc);
+            if (supply_volts < 3.0) {
+                supply_volts = ADS1115Config::V_SUPPLY;
+            }
+            
+            sum += calculatePressureBarRaw(volts, supply_volts);
             delay(ADS1115Config::CALIBRATION_DELAY_MS);
         }
 

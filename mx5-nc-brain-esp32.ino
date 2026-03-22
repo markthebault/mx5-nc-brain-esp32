@@ -117,12 +117,20 @@ void loop() {
         volts[i] = ads.computeVolts(adc[i]);
     }
 
-    // --- 2. Process Sensor Data ---
-    // Oil Temperature (Channel 0)
-    float rawTemp = (float)SensorUtils::calculateTemperature(volts[0]);
+    // Use measured supply voltage from designated channel
+    float realVcc = volts[ADS1115Config::CH_SUPPLY_VOLTAGE];
+    
+    // Fallback if realVcc is strangely low (e.g. not connected)
+    if (realVcc < 3.0) {
+        realVcc = ADS1115Config::V_SUPPLY;
+    }
 
-    // Oil Pressure (Channel 1)
-    float rawOilPress = SensorUtils::calculatePressureBarRaw(volts[1]);
+    // --- 2. Process Sensor Data ---
+    // Oil Temperature
+    float rawTemp = (float)SensorUtils::calculateTemperature(volts[ADS1115Config::CH_OIL_TEMP], realVcc);
+
+    // Oil Pressure
+    float rawOilPress = SensorUtils::calculatePressureBarRaw(volts[ADS1115Config::CH_OIL_PRESS], realVcc);
 
     // Seed EMA on first reading to avoid ramping from zero
     if (firstReading) {

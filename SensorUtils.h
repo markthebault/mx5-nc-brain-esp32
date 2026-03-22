@@ -20,9 +20,10 @@ namespace SensorUtils {
      * Assumes a voltage divider with NTC as the lower resistor.
      *
      * @param v_measured Measured voltage from ADC (V)
+     * @param v_supply Measured supply voltage (V)
      * @return Temperature in Celsius, or -99.9 if out of range
      */
-    double calculateTemperature(double v_measured);
+    double calculateTemperature(double v_measured, double v_supply);
 
     /**
      * @brief Convert ADC voltage to pressure (raw, uncalibrated)
@@ -30,9 +31,10 @@ namespace SensorUtils {
      * Calculates pressure from sensor voltage using linear relationship.
      *
      * @param v_measured Measured voltage from ADC (V)
+     * @param v_supply Measured supply voltage (V)
      * @return Pressure in Bar (uncalibrated)
      */
-    float calculatePressureBarRaw(float v_measured);
+    float calculatePressureBarRaw(float v_measured, float v_supply);
 
     /**
      * @brief Perform auto-zero calibration for pressure sensor
