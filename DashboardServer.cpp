@@ -9,6 +9,7 @@
 // --- Module State ---
 static NetworkServer server(WebServerConfig::PORT);
 static TelemetryData* pData = nullptr;
+static DashboardServer::DashboardData* pDashData = nullptr;
 
 // --- Forward Declarations ---
 static void serverTask(void* pvParameters);
@@ -39,8 +40,9 @@ namespace DashboardServer {
                      WiFi.softAPIP().toString().c_str());
     }
 
-    void startTask(TelemetryData* telemetryData) {
+    void startTask(TelemetryData* telemetryData, DashboardData* dashboardData) {
         pData = telemetryData;
+        pDashData = dashboardData;
         xTaskCreate(serverTask, "dashboard_server", WebServerConfig::TASK_STACK_SIZE,
                     nullptr, 1, nullptr);
         DEBUG_PRINTLN("Dashboard server task started.");
@@ -127,10 +129,10 @@ static void sendJsonResponse(NetworkClient& client) {
         "{\"oilTemp\":%.2f,\"waterTemp\":%.2f,\"engineRPM\":%u,"
         "\"oilPressure\":%.2f,\"brakePressure\":%.2f,\"brakePercent\":%d,"
         "\"throttlePos\":%.1f,\"speed\":%.2f,\"accelPos\":%.1f,"
-        "\"gaugeType\":\"%s\",\"luminosity\":%u,\"uptime\":%lu}",
+        "\"ain2Voltage\":%.2f,\"gaugeType\":\"%s\",\"luminosity\":%u,\"uptime\":%lu}",
         pData->oilTemp, pData->waterTemp, pData->engineRPM,
         pData->oilPressure, pData->brakePressure, pData->brakePercent,
-        pData->throttlePos, pData->speed, pData->accelPos,
+        pData->throttlePos, pData->speed, pData->accelPos, (pDashData ? pDashData->ain2Voltage : 0.0f),
         pData->gaugeType == GAUGE_RACING ? "RACING" : "NORMAL",
         pData->luminosity, millis() / 1000
     );
@@ -183,6 +185,8 @@ static void sendHtmlResponse(NetworkClient& client) {
         "<div class='value' id='lum'>--</div><div class='unit'>%</div></div>"
         "<div class='card'><div class='label'>Pot Voltage</div>"
         "<div class='value' id='potV'>--</div><div class='unit'>V</div></div>"
+        "<div class='card'><div class='label'>IN2 Voltage</div>"
+        "<div class='value' id='in2'>--</div><div class='unit'>V</div></div>"
         "</div>"
         "<div class='status'>Uptime: <span id='up'>--</span>s | <a href='/update' style='color:#0ff'>Firmware Update</a></div>"
     );
@@ -201,6 +205,7 @@ static void sendHtmlResponse(NetworkClient& client) {
         "document.getElementById('gauge').textContent=d.gaugeType;"
         "document.getElementById('lum').textContent=d.luminosity;"
         "document.getElementById('potV').textContent=((d.luminosity-10)/90*3.3).toFixed(2);"
+        "document.getElementById('in2').textContent=d.ain2Voltage.toFixed(2);"
         "document.getElementById('up').textContent=d.uptime;"
         "}).catch(()=>{})}u();setInterval(u,%u);"
         "</script></body></html>",

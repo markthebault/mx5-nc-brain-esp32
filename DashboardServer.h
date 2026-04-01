@@ -21,6 +21,10 @@ namespace DashboardServer {
      */
     void init();
 
+    struct DashboardData {
+        float ain2Voltage = 0.0f;
+    };
+
     /**
      * @brief Start the server FreeRTOS task
      *
@@ -28,8 +32,9 @@ namespace DashboardServer {
      * without blocking the main loop.
      *
      * @param telemetryData Pointer to shared telemetry data structure
+     * @param dashboardData Pointer to dashboard-only metrics structure
      */
-    void startTask(TelemetryData* telemetryData);
+    void startTask(TelemetryData* telemetryData, DashboardData* dashboardData);
 }
 
 #endif // DASHBOARD_SERVER_H

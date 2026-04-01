@@ -28,6 +28,7 @@
 // --- Global Objects ---
 Adafruit_ADS1115 ads;
 TelemetryData myData;
+DashboardServer::DashboardData dashboardData;
 ESP_NOW_Broadcast_Peer broadcast_peer(GeneralConfig::ESPNOW_WIFI_CHANNEL, WIFI_IF_STA, nullptr);
 
 // --- Calibration Data ---
@@ -77,7 +78,7 @@ void setup() {
 
     // --- Dashboard Web Server Setup ---
     DashboardServer::init();
-    DashboardServer::startTask(&myData);
+    DashboardServer::startTask(&myData, &dashboardData);
 
     // --- CAN Bus Setup ---
     CANBus::init();
@@ -147,6 +148,7 @@ void loop() {
 
     myData.oilTemp = smoothedTemperature;
     myData.oilPressure = (smoothedPressure > 0) ? smoothedPressure : 0;
+    dashboardData.ain2Voltage = volts[2];
 
     // Water Temperature - Now received from CAN bus (ID 0x240)
     // myData.waterTemp is updated by CANBus::receiveTask() in CANBus.cpp
